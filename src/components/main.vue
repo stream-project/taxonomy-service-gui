@@ -9,31 +9,30 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
 
 import taglist_v from './tag-list.vue'
-import fetchTags_SPARQL from '../controller/helper.js'
+import {fetchTags_SPARQL} from '../controller/helper.js'
 
 export default {
     name: 'mymain',
     props: {
         msg: String
     },
+    data() {
+        return {
+            taglist: [],
+            fetchTags: () => {}
+        }
+    },
     components: {
         'tag-list': taglist_v
     },
-    setup () {
-        const taglist = ref([]);
-        const fetchTags = () => {
-            taglist.value = fetchTags_SPARQL()
+    async created() {
+        this.fetchTags = async function() {
+            this.taglist = await fetchTags_SPARQL();
         }
         
-        onMounted(fetchTags);
-        
-        return {
-            taglist,
-            fetchTags
-        };
+        this.fetchTags();
     }
 }
 </script>
