@@ -1,5 +1,5 @@
 <template>
-    <ul>
+    <ul class="list-group">
         <tag-list-entry v-for="tag in taglist" :tag="tag" :key="tag.id" />
     </ul>
 </template>

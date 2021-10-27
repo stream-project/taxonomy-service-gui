@@ -1,8 +1,8 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
+    <h1>Taxonomy service</h1>
     <p>
-      Test
+      This is an editable list.
     </p>
     <tag-list :taglist="taglist" />
   </div>
@@ -16,7 +16,6 @@ import {fetchTags_SPARQL} from '../controller/helper.js'
 export default {
     name: 'mymain',
     props: {
-        msg: String
     },
     data() {
         return {
@@ -30,6 +29,14 @@ export default {
     async created() {
         this.fetchTags = async function() {
             this.taglist = await fetchTags_SPARQL();
+            
+            if (this.taglist.length < 1) {
+                this.$swal({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'There are no tags stored at the endpoint. This could also be the result of an error.'
+                });
+            }
         }
         
         this.fetchTags();

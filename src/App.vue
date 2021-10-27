@@ -1,6 +1,6 @@
 <template>
   <myheader />
-  <mymain msg="Welcome to Your Vue.js App"/>
+  <mymain />
   <myfooter />
 </template>
 
@@ -27,6 +27,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>

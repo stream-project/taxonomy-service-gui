@@ -1,6 +1,6 @@
 <template>
     <footer>
-        <p>Taxonomy service - created in the STREAM project</p>
+        <p>Taxonomy service - created in the <a href="https://stream-projekt.net" target="_blank" rel="noopener noreferrer">STREAM project</a></p>
     </footer>
 </template>
 

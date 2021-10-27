@@ -1,15 +1,38 @@
 async function fetchTags_SPARQL() {
-    // TODO
-    var p = new Promise((resolve, reject) => {
-        resolve([{'name': 'metal', 'uri': 'http://example.com/s9udfhsfs8fh', 'id': 0},
-            {'name': 'wood', 'uri': 'http://example.com/udfhsfsd8fh', 'id': 1}]);
+    const SimpleClient = require('sparql-http-client/SimpleClient')
+
+    const endpointUrl = 'https://sparql.stream-dataspace.net/sparql/';
+    const query = `
+    PREFIX ex: <http://stream-ontology.com/tags/>
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+    select ?subject ?label
+    where { ?subject a skos:Concept ;
+                  skos:prefLabel ?label .  }`;
+
+    const client = new SimpleClient({ endpointUrl });
+    const stream = await client.query.select(query);
     
-        var a = 2;
-        if (a === 1)
-            reject([]);
-    });
-    var res = await p;
-    return res;
+    if (!stream.ok) {
+        console.error(stream.statusText);
+        console.log(stream);
+        return [];
+    }
+
+    const content = await stream.json();
+
+    var list = [];
+    var i = 1;
+    console.log(content.results.bindings);
+    for (const row of content.results.bindings) {
+        list.push({
+            name: row.label.value,
+            id: i,
+            uri: row.subject.value
+        });
+        i++;
+    }
+    
+    return list.sort();
 }
 
 export {
