@@ -24,10 +24,12 @@ export default {
         }
     },
     created() {
-        const setPublishNeeded = () => {
-          this.tagsWereChanged = true;
+        const setPublishNeeded = (v) => {
+          this.tagsWereChanged = v;
         }
         provide('setPublishNeeded', setPublishNeeded);
+        
+        console.log(process.env);
     }
 }
 </script>

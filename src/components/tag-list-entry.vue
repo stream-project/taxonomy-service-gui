@@ -7,6 +7,7 @@
             <span class="input-group-text" :id="tag.id + '_label'">Enter new value:</span>
             <input type="text" class="form-control" :placeholder="tag.name" aria-label="tag" :aria-describedby="tag.id + '_label'" :id="tag.id + '_input'" v-model="newValue">
             <button type="button" class="btn btn-dark" @click="onSave()" :disabled="isSaveDisabled">Save</button>
+            <button type="button" class="btn btn-danger" @click="onDelete()">Delete</button>
         </div>
         <div class="d-flex w-100 justify-content-between">
             <span v-if="oldName.length > 0" class="mb-1">Old value was: {{ oldName }}</span>
@@ -16,7 +17,6 @@
 
 <script>
 import { inject } from 'vue'
-import { v4 as uuidv4 } from 'uuid';
 
 export default {
   name: 'tag-list-entry',
@@ -26,6 +26,7 @@ export default {
   data() {
       return {
           setPublishNeeded: () => {},
+          deleteTag: () => {},
           oldName: '',
           newValue: ''
       };
@@ -37,6 +38,7 @@ export default {
   },
   created() {
       this.setPublishNeeded = inject('setPublishNeeded');
+      this.deleteTag = inject('deleteTag');
   },
   methods: {
       onSave() {
@@ -52,13 +54,11 @@ export default {
           } catch (e) {
               console.error(e);
           }
-          var newUri = this.tag.uri.split("/").slice(0, -1).join("/")+"/"+encodeURIComponent(uuidv4());
           var newEntry = {
               name: this.newValue,
               oldName: this.tag.name,
               id: this.tag.id,
-              oldUri: this.tag.uri,
-              uri: newUri
+              uri: this.tag.uri
           };
           console.log('new entry:', newEntry);
           if (!changedTags || changedTags.length < 1) {
@@ -69,7 +69,6 @@ export default {
               var match = changedTags.find((e) => {return e.id === newEntry.id});
               if (match && match.id) {
                   match.name = this.newValue;
-                  match.uri = newUri;
               }
               else
                 changedTags.push(newEntry);
@@ -84,7 +83,30 @@ export default {
           this.newValue = '';
           
           // Notify header
-          this.setPublishNeeded();
+          this.setPublishNeeded(true);
+      },
+      onDelete() {
+          // delete from storage
+          var changedTags = [];
+          try {
+              changedTags = JSON.parse(localStorage.getItem('app_changed_tags'));
+              changedTags = changedTags.filter((e) => {
+                  return (e.id !== this.tag.id);
+              });
+          } catch (e) {
+              console.error(e);
+          }
+          localStorage.setItem('app_changed_tags', JSON.stringify(changedTags));
+          
+          // Notify header
+          this.setPublishNeeded(true);
+          
+          // update GUI on parent level
+          this.deleteTag({
+              id: this.tag.id,
+              oldName: this.tag.name,
+              uri: this.tag.uri
+          });
       }
   }
 }

@@ -4,16 +4,31 @@
       <div class="header-right">
         <a class="active" href="#">Home</a>
         <a @click="reload">Reload</a>
-        <span :class="spanClass"><a @click="preventIfHidden" :href="href" :aria-disabled="triggerDisabled">Trigger publish</a></span>
+        <span :class="spanClass">
+            <a @click="preventIfHidden" :href="href" :aria-disabled="triggerDisabled">
+                Trigger publish
+                <span class="position-absolute start-99 translate-middle badge rounded-pill bg-success">
+                    {{ numberOfChanges }}
+                    <span class="visually-hidden">Changes</span>
+                </span>
+            </a>
+        </span>
       </div>
     </div>
 </template>
 
 <script>
+import {publish} from '../controller/helper.js'
+
 export default {
   name: 'myheader',
   props: {
       publishingNeeded: Boolean
+  },
+  data() {
+      return {
+          numberOfChanges: '' // TODO redo the code to have a component which is responsible for the data
+      };
   },
   computed: {
       spanClass() {
@@ -32,9 +47,36 @@ export default {
           if (event.target.nodeName == 'A' && event.target.getAttribute('aria-disabled') == 'true') {
             event.preventDefault();
           }
+          else {
+              this.publish();
+          }
       },
       reload() {
-          location.reload();
+          this.$swal({
+              title: 'Reloading the page',
+              text: "Changes which were not published will be discarded.",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes, reload'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                location.reload();
+              }
+          });
+      },
+      publish() {
+          const success = publish(JSON.parse(localStorage.getItem('app_changed_tags')));
+          if (success)
+            location.reload();
+          else {
+              this.$swal({
+                  icon: 'error',
+                  title: 'Error',
+                  text: 'There is a problem with the SPARQL endpoint. Please have a look into the browser console/log.'
+              })
+          }
       }
   }
 }

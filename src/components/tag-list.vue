@@ -16,6 +16,7 @@
 
 <script>
 import taglistentry from './tag-list-entry.vue'
+import { provide, inject } from 'vue'
 
 export default {
   name: 'tag-list',
@@ -24,18 +25,57 @@ export default {
   },
   data() {
       return {
-          newEntries: []
+          newEntries: [],
+          setPublishNeeded: () => {},
+          deletedIds: []
       };
   },
   components: {
       'tag-list-entry': taglistentry
   },
   created() {
+      this.setPublishNeeded = inject('setPublishNeeded');
+      
       localStorage.removeItem('app_changed_tags');
+      
+      const deleteTag = (tag) => {
+          var tagNeedsToBeDeletedWithSPARQL = true;
+          console.log('new entries:', [].concat(this.newEntries));
+          this.newEntries = this.newEntries.filter((e) => {
+              const a = (e.id !== tag.id);
+              if (!a)
+                tagNeedsToBeDeletedWithSPARQL = false;
+              return a;
+          });
+          console.log('filtered new entries:', this.newEntries);
+          var changedTags = [];
+          try {
+              changedTags = JSON.parse(localStorage.getItem('app_changed_tags'));
+          } catch (e) {
+              console.error(e);
+          }
+          if (!changedTags || changedTags.length < 1) {
+            changedTags = [];
+          }
+          if (tagNeedsToBeDeletedWithSPARQL) {
+              console.warn('Adding tag to delete list:', tag);
+              // Add delete into storage
+              changedTags.push(tag);
+              localStorage.setItem('app_changed_tags', JSON.stringify(changedTags));
+              
+              this.deletedIds.push(tag.id);
+          }
+          if (changedTags.length < 1) {
+              this.setPublishNeeded(false);
+          }
+      }
+      provide('deleteTag', deleteTag);
   },
   computed: {
       fullList() {
-          return this.newEntries.concat(this.taglist);
+          return this.newEntries.concat(this.taglist.filter((e) => {
+              return this.deletedIds.indexOf(e.id) === -1;
+          }));
       }
   },
   methods: {
@@ -49,7 +89,7 @@ export default {
           
           this.newEntries.push({
               name: '',
-              uri: '',// TODO use URI from env
+              uri: process.env.VUE_APP_BASE_URI_TAGS + 'dummy',
               id: newId
           });
           this.newEntries = this.newEntries.sort((a, b) => {
