@@ -1,5 +1,5 @@
 <template>
-  <myheader />
+  <myheader :publishingNeeded="tagsWereChanged" />
   <mymain />
   <myfooter />
 </template>
@@ -9,6 +9,7 @@
 import mymain from './components/main.vue'
 import myheader from './components/myheader.vue'
 import myfooter from './components/myfooter.vue'
+import { provide } from 'vue'
 
 export default {
     name: 'App',
@@ -16,6 +17,17 @@ export default {
         'myheader': myheader,
         'mymain': mymain,
         'myfooter': myfooter
+    },
+    data() {
+        return {
+            tagsWereChanged: false
+        }
+    },
+    created() {
+        const setPublishNeeded = () => {
+          this.tagsWereChanged = true;
+        }
+        provide('setPublishNeeded', setPublishNeeded);
     }
 }
 </script>

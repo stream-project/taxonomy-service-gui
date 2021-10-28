@@ -14,6 +14,9 @@ export default {
   },
   components: {
       'tag-list-entry': taglistentry
+  },
+  created() {
+      localStorage.removeItem('app_changed_tags');
   }
 }
 </script>

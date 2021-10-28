@@ -4,18 +4,52 @@
       <div class="header-right">
         <a class="active" href="#home">Home</a>
         <a href="#reload">Reload</a>
-        <a href="#publish">Trigger publish</a>
+        <span :class="spanClass"><a @click="preventIfHidden" :href="href" :aria-disabled="triggerDisabled">Trigger publish</a></span>
       </div>
     </div>
 </template>
 
 <script>
 export default {
-  name: 'myheader'
+  name: 'myheader',
+  props: {
+      publishingNeeded: Boolean
+  },
+  computed: {
+      spanClass() {
+          return this.publishingNeeded ? '' : 'isDisabled';
+      },
+      href() {
+          return this.publishingNeeded ? '#publish' : '';
+      },
+      triggerDisabled() {
+          return !this.publishingNeeded;
+      }
+  },
+  methods: {
+      preventIfHidden(event) {
+          // filter out clicks on any other elements
+          if (event.target.nodeName == 'A' && event.target.getAttribute('aria-disabled') == 'true') {
+            event.preventDefault();
+          }
+      }
+  }
 }
 </script>
 
 <style>
+.isDisabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+a[aria-disabled="true"] {
+  color: currentColor;
+  display: inline-block;  /* For IE11/ MS Edge bug */
+  pointer-events: none;
+  text-decoration: none;
+}
+
+
 * {box-sizing: border-box;}
 
 body { 

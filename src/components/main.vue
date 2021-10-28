@@ -2,7 +2,7 @@
   <div class="hello">
     <h1>Taxonomy service</h1>
     <p>
-      This is an editable list.
+      This is an editable list. Every change has to be saved per tag and then everything is submitted with a click on "Trigger publish".
     </p>
     <tag-list :taglist="taglist" />
   </div>
