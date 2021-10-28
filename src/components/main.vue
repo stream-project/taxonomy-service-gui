@@ -1,9 +1,6 @@
 <template>
   <div class="hello">
     <h1>Taxonomy service</h1>
-    <p>
-      This is an editable list. Every change has to be saved per tag and then everything is submitted with a click on "Trigger publish".
-    </p>
     <tag-list :taglist="taglist" />
   </div>
 </template>
@@ -29,6 +26,19 @@ export default {
     async created() {
         this.fetchTags = async function() {
             this.taglist = await fetchTags_SPARQL();
+            this.taglist = this.taglist.sort((a, b) => {
+                var nameA = a.name.toUpperCase(); // Groß-/Kleinschreibung ignorieren
+                var nameB = b.name.toUpperCase(); // Groß-/Kleinschreibung ignorieren
+                if (nameA < nameB) {
+                    return -1;
+                }
+                if (nameA > nameB) {
+                    return 1;
+                }
+
+                // Namen müssen gleich sein
+                return 0;
+            });
             
             if (this.taglist.length < 1) {
                 this.$swal({

@@ -16,7 +16,7 @@ footer {
 	width: 100%;
 	left: 0;
 	bottom: 0;
-	background-color: brown;
+	background-color: sandybrown;
 	color: white;
 	text-align: center;
 }

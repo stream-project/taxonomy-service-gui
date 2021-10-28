@@ -2,8 +2,8 @@
     <div class="header">
       <img alt="Vue logo" class="logo" src="../assets/logo.png">
       <div class="header-right">
-        <a class="active" href="#home">Home</a>
-        <a href="#reload">Reload</a>
+        <a class="active" href="#">Home</a>
+        <a @click="reload">Reload</a>
         <span :class="spanClass"><a @click="preventIfHidden" :href="href" :aria-disabled="triggerDisabled">Trigger publish</a></span>
       </div>
     </div>
@@ -32,6 +32,9 @@ export default {
           if (event.target.nodeName == 'A' && event.target.getAttribute('aria-disabled') == 'true') {
             event.preventDefault();
           }
+      },
+      reload() {
+          location.reload();
       }
   }
 }
