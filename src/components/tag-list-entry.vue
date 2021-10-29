@@ -17,6 +17,7 @@
 
 <script>
 import { inject } from 'vue'
+import {store} from '../controller/helper.js'
 
 export default {
   name: 'tag-list-entry',
@@ -53,6 +54,7 @@ export default {
               changedTags = JSON.parse(localStorage.getItem('app_changed_tags'));
           } catch (e) {
               console.error(e);
+              changedTags = [];
           }
           var newEntry = {
               name: this.newValue,
@@ -74,6 +76,7 @@ export default {
                 changedTags.push(newEntry);
           }
           localStorage.setItem('app_changed_tags', JSON.stringify(changedTags));
+          store.setCounterAction(changedTags.length);
           this.oldName = this.tag.name;
           
           // update GUI
@@ -95,8 +98,10 @@ export default {
               });
           } catch (e) {
               console.error(e);
+              changedTags = [];
           }
           localStorage.setItem('app_changed_tags', JSON.stringify(changedTags));
+          store.setCounterAction(changedTags.length);
           
           // Notify header
           this.setPublishNeeded(true);

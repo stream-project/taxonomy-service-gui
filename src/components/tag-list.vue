@@ -17,6 +17,7 @@
 <script>
 import taglistentry from './tag-list-entry.vue'
 import { provide, inject } from 'vue'
+import {store} from '../controller/helper.js'
 
 export default {
   name: 'tag-list',
@@ -62,6 +63,7 @@ export default {
               // Add delete into storage
               changedTags.push(tag);
               localStorage.setItem('app_changed_tags', JSON.stringify(changedTags));
+              store.setCounterAction(changedTags.length);
               
               this.deletedIds.push(tag.id);
           }

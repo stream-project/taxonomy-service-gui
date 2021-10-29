@@ -8,7 +8,7 @@
             <a @click="preventIfHidden" :href="href" :aria-disabled="triggerDisabled">
                 Trigger publish
                 <span class="position-absolute start-99 translate-middle badge rounded-pill bg-success">
-                    {{ numberOfChanges }}
+                    {{ sharedState.counter }}
                     <span class="visually-hidden">Changes</span>
                 </span>
             </a>
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import {publish} from '../controller/helper.js'
+import {publish, store} from '../controller/helper.js'
 
 export default {
   name: 'myheader',
@@ -27,7 +27,7 @@ export default {
   },
   data() {
       return {
-          numberOfChanges: '' // TODO redo the code to have a component which is responsible for the data
+          sharedState: store.state
       };
   },
   computed: {
