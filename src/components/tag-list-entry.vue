@@ -12,6 +12,9 @@
         <div class="d-flex w-100 justify-content-between">
             <span v-if="oldName.length > 0" class="mb-1">Old value was: {{ oldName }}</span>
         </div>
+        <div class="d-flex w-100 justify-content-between">
+            <span v-if="tag.portal.length > 0" class="mb-1">Created by the portal: {{ tag.portal }}</span>
+        </div>
     </a>
 </template>
 
@@ -45,9 +48,9 @@ export default {
       onSave() {
           if (this.newValue.length < 1)
             return;
-          
+
           console.log("Changing ", this.tag.name, "to ", this.newValue);
-          
+
           // Store change
           var changedTags = [];
           try {
@@ -60,7 +63,8 @@ export default {
               name: this.newValue,
               oldName: this.tag.name,
               id: this.tag.id,
-              uri: this.tag.uri
+              uri: this.tag.uri,
+              portal: this.tag.portal
           };
           console.log('new entry:', newEntry);
           if (!changedTags || changedTags.length < 1) {
@@ -78,13 +82,13 @@ export default {
           localStorage.setItem('app_changed_tags', JSON.stringify(changedTags));
           store.setCounterAction(changedTags.length);
           this.oldName = this.tag.name;
-          
+
           // update GUI
           document.getElementById(this.tag.id+"_input").value = '';
           document.getElementById(this.tag.id+"_input").placeholder = this.newValue;
           document.getElementById(this.tag.id+"_name").innerText = this.newValue;
           this.newValue = '';
-          
+
           // Notify header
           this.setPublishNeeded(true);
       },
@@ -102,15 +106,16 @@ export default {
           }
           localStorage.setItem('app_changed_tags', JSON.stringify(changedTags));
           store.setCounterAction(changedTags.length);
-          
+
           // Notify header
           this.setPublishNeeded(true);
-          
+
           // update GUI on parent level
           this.deleteTag({
               id: this.tag.id,
               oldName: this.tag.name,
-              uri: this.tag.uri
+              uri: this.tag.uri,
+              portal: this.tag.portal
           });
       }
   }
