@@ -18,6 +18,7 @@
 import taglistentry from './tag-list-entry.vue'
 import { provide, inject } from 'vue'
 import {store} from '../controller/helper.js'
+import { v4 as uuidv4 } from 'uuid';
 
 export default {
   name: 'tag-list',
@@ -36,9 +37,9 @@ export default {
   },
   created() {
       this.setPublishNeeded = inject('setPublishNeeded');
-      
+
       localStorage.removeItem('app_changed_tags');
-      
+
       const deleteTag = (tag) => {
           var tagNeedsToBeDeletedWithSPARQL = true;
           console.log('new entries:', [].concat(this.newEntries));
@@ -64,7 +65,7 @@ export default {
               changedTags.push(tag);
               localStorage.setItem('app_changed_tags', JSON.stringify(changedTags));
               store.setCounterAction(changedTags.length);
-              
+
               this.deletedIds.push(tag.id);
           }
           if (changedTags.length < 1) {
@@ -88,13 +89,14 @@ export default {
                 return id+1;
               return acc;
           }, 1);
-          
+
           this.newEntries.push({
               name: '',
-              uri: process.env.VUE_APP_BASE_URI_TAGS + 'dummy',
+              uri: process.env.VUE_APP_BASE_URI_TAGS + uuidv4(),
               id: newId
           });
-          this.newEntries = this.newEntries.sort((a, b) => {
+          
+          this.newEntries.sort((a, b) => {
               var nameA = a.name.toUpperCase(); // Groß-/Kleinschreibung ignorieren
               var nameB = b.name.toUpperCase(); // Groß-/Kleinschreibung ignorieren
               if (nameA < nameB) {

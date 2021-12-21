@@ -10,10 +10,10 @@
             <button type="button" class="btn btn-danger" @click="onDelete()">Delete</button>
         </div>
         <div class="d-flex w-100 justify-content-between">
-            <span v-if="oldName.length > 0" class="mb-1">Old value was: {{ oldName }}</span>
+            <span v-if="hasOldName" class="mb-1">Old value was: {{ oldName }}</span>
         </div>
         <div class="d-flex w-100 justify-content-between">
-            <span v-if="tag.portal.length > 0" class="mb-1">Created by the portal: {{ tag.portal }}</span>
+            <span v-if="hasPortal" class="mb-1">Created by the portal: {{ tag.portal }}</span>
         </div>
     </a>
 </template>
@@ -38,6 +38,12 @@ export default {
   computed: {
       isSaveDisabled() {
           return this.newValue.length < 1;
+      },
+      hasOldName() {
+        return this.oldName && this.oldName.length > 0;
+      },
+      hasPortal() {
+        return this.tag && this.tag.portal && this.tag.portal.length > 0;
       }
   },
   created() {
@@ -95,13 +101,13 @@ export default {
       onDelete() {
           // delete from storage
           var changedTags = [];
+          var tag = this.tag;
           try {
               changedTags = JSON.parse(localStorage.getItem('app_changed_tags'));
               changedTags = changedTags.filter((e) => {
-                  return (e.id !== this.tag.id);
+                  return (e.id !== tag.id);
               });
           } catch (e) {
-              console.error(e);
               changedTags = [];
           }
           localStorage.setItem('app_changed_tags', JSON.stringify(changedTags));
