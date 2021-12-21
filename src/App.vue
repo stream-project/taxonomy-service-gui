@@ -1,6 +1,9 @@
 <template>
   <myheader :publishingNeeded="tagsWereChanged" />
   <mymain />
+  <div style="height:40px!important;">
+
+  </div>
   <myfooter />
 </template>
 
@@ -28,7 +31,7 @@ export default {
           this.tagsWereChanged = v;
         }
         provide('setPublishNeeded', setPublishNeeded);
-        
+
         console.log(process.env);
     }
 }
