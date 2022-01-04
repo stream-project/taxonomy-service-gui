@@ -8,7 +8,7 @@ async function fetchTags_SPARQL() {
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
     PREFIX ckan: <http://stream-ontology.com/ckan/>
     select ?subject ?label ?portal
-    FROM  <http://stream-ontology.com/tags/> 
+    FROM  <http://stream-ontology.com/tags/>
     where { ?subject a skos:Concept ;
                   skos:prefLabel ?label .
                 OPTIONAL { ?subject ckan:portal ?portal }  }`;
@@ -92,6 +92,26 @@ async function publish(taglist) {
     return true;
 }
 
+import axios from 'axios';
+//TODO
+async function sendToCKAN(skos) {
+  var portals = process.env.VUE_APP_CKAN_PORTALS.split(",");
+  var responses = [];
+  portals.forEach(async (portal) => {
+    var response = await axios({
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: 'skos,
+      url: portal+'/post'
+    });
+    console.log(response);
+    responses.push(response.post);
+  });
+
+
+  return true;
+}
+
 import { reactive } from 'vue'
 // A basic store object which is used in different components
 const store = {
@@ -129,5 +149,6 @@ const store = {
 export {
     fetchTags_SPARQL,
     publish,
+    sendToCKAN,
     store
 }

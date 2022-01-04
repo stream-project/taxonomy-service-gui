@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import {publish, store} from '../controller/helper.js'
+import {publish, sendToCKAN, store} from '../controller/helper.js'
 
 export default {
   name: 'myheader',
@@ -68,8 +68,25 @@ export default {
       },
       publish() {
           const success = publish(JSON.parse(localStorage.getItem('app_changed_tags')));
-          if (success)
-            location.reload();
+          if (success) {
+            //ask if CKAN instances should be informed
+            this.$swal({
+                title: 'Inform CKAN instances',
+                text: "The new version of the taxonomy could now be send to the CKAN instances. This will result in updating the used tags in the datasets.",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, send to CKAN instances'
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  // TODO use SKOS rdf as parameter
+                  sendToCKAN();
+                }
+                else
+                  location.reload();
+            });
+          }
           else {
               this.$swal({
                   icon: 'error',
@@ -97,7 +114,7 @@ a[aria-disabled="true"] {
 
 * {box-sizing: border-box;}
 
-body { 
+body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -118,7 +135,7 @@ body {
   text-align: center;
   padding: 12px;
   text-decoration: none;
-  font-size: 18px; 
+  font-size: 18px;
   line-height: 25px;
   border-radius: 4px;
 }
@@ -148,7 +165,7 @@ body {
     display: block;
     text-align: left;
   }
-  
+
   .header-right {
     float: none;
   }
