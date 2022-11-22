@@ -80,8 +80,17 @@ export default {
                 confirmButtonText: 'Yes, send to CKAN instances'
               }).then((result) => {
                 if (result.isConfirmed) {
-                  // TODO use SKOS rdf as parameter
-                  sendToCKAN();
+                  var res = sendToCKAN(JSON.parse(localStorage.getItem('app_changed_tags')));
+                  if (res.length > 0) {
+                    this.$swal({
+                        title: 'Applying patches failed',
+                        text: "For the following CKAN instances applyng the patch failed: "+res.reduce((acc, c) => {return c+acc.portal+", "}, ""),
+                        icon: 'error',
+                        showCancelButton: false,
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'Discard'
+                      })
+                  }
                 }
                 else
                   location.reload();

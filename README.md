@@ -1,5 +1,7 @@
 # taxonomyservice
 
+Intended to be used in the STREAM project under the subdomain tags.stream-dataspace.net
+
 ## Project setup
 ```
 npm install

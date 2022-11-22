@@ -93,23 +93,40 @@ async function publish(taglist) {
 }
 
 import axios from 'axios';
-//TODO
-async function sendToCKAN(skos) {
+
+async function sendToCKAN(taglist) {
+  var patch = {delete: [], insert: []};
+
+  // build patch
+  taglist.forEach((item) => {
+      if (item.oldName && item.oldName !== '') {
+          patch.delete.push(item.oldName)
+      }
+      if (item.name && item.name !== '') {
+          patch.insert.push(item.name)
+      }
+  });
+
+  // send the requests
   var portals = process.env.VUE_APP_CKAN_PORTALS.split(",");
   var responses = [];
   portals.forEach(async (portal) => {
     var response = await axios({
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      data: 'skos,
-      url: portal+'/post'
+      data: patch,
+      url: portal+'/api/3/action/process_tag_patch'
     });
     console.log(response);
-    responses.push(response.post);
+    responses.push({"portal": portal, status: response.status});
   });
 
+  var failed = responses.filter((e) => {return e.status !== "200" });
+  if (failed.length > 0) {
+    return failed;
+  }
 
-  return true;
+  return [];
 }
 
 import { reactive } from 'vue'
